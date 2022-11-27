@@ -22,11 +22,11 @@ public class MpaDbStorage implements MpaStorage {
     }
 
     @Override
-    public Mpa getById(int mpaId) { //24:49
+    public Mpa getById(int mpaId) {
         String sql = "SELECT * FROM mpa WHERE mpa_id = ?";
         List<Mpa> mpa = jdbcTemplate.query(sql, (rs, rowNum) -> makeMpa(rs, rowNum), mpaId);
 
-        if(mpa.size() != 1) {
+        if (mpa.size() != 1) {
             throw new NotFoundException(String.format("MPA с id=%s не найден", mpaId));
         }
         return mpa.get(0);

@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +17,7 @@ public class Film {
     private int duration;
     private Mpa mpa;
     private long rate = 0L;
-    private Set<Genre> genres = new HashSet<>();
+    private TreeSet<Genre> genres = new TreeSet<>();
     @JsonIgnore
     private Set<Long> likeUserIds = new HashSet<>();
 
@@ -36,6 +33,7 @@ public class Film {
     public void addGenre(Genre genre) {
         genres.add(genre);
     }
+
     public Map<String, Object> toMap() {
         Map<String, Object> mapFilm = new HashMap<>();
         mapFilm.put("film_name", name);

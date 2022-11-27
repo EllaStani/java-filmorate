@@ -15,7 +15,6 @@ import java.util.List;
 
 @Slf4j
 @RestController
-//@RequestMapping("/films")
 public class FilmController {
     @Autowired
     private FilmService filmService;
@@ -54,6 +53,7 @@ public class FilmController {
         log.info("Get-запрос: всего жанров = {} : {}", genres.size(), genres);
         return genres;
     }
+
     @GetMapping("/mpa/{mpaId}")
     public Mpa getMpaById(@PathVariable int mpaId) {
         Mpa mpa = filmService.getMpaById(mpaId);
@@ -87,13 +87,13 @@ public class FilmController {
     @PutMapping("/films/{filmId}/like/{userId}")
     public void addLike(@PathVariable long filmId, @PathVariable long userId) {
         filmService.addLike(filmId, userId);
-        log.info("Put-запрос:  новый лайк у фильма с id={}", userId);
+        log.info("Put-запрос:  новый лайк у фильма с id={}", filmId);
     }
 
     @DeleteMapping("/films/{filmId}/like/{userId}")
     public void deleteLike(@PathVariable long filmId, @PathVariable long userId) {
         filmService.deleteLike(filmId, userId);
-        log.info("Delete-запрос:  дизлайк у фильма с id={}", userId);
+        log.info("Delete-запрос:  дизлайк у фильма с id={}", filmId);
     }
 
     private void verification(Film film) {
@@ -101,25 +101,25 @@ public class FilmController {
         LocalDate releaseDateBefore = LocalDate.of(1895, 12, 28);
 
         if (!StringUtils.hasText(film.getName())) {
-//            log.error("Запрос не выполнен: отсутствует название фильма.");
+            log.error("Запрос не выполнен: отсутствует название фильма.");
             throw new ValidationException("название не может быть пустым");
         }
 
         if (film.getReleaseDate().isBefore(releaseDateBefore)) {
-//            log.error("Запрос не выполнен: дата релиза={} меньше {}",
-//                    film.getReleaseDate(), releaseDateBefore);
+            log.error("Запрос не выполнен: дата релиза={} меньше {}",
+                    film.getReleaseDate(), releaseDateBefore);
             throw new ValidationException("дата релиза — раньше 28 декабря 1895 года");
         }
 
         if (film.getDuration() <= 0) {
-//            log.error("Запрос не выполнен: продолжительность фильма={} - должна быть больше 0",
-//                    film.getDuration());
+            log.error("Запрос не выполнен: продолжительность фильма={} - должна быть больше 0",
+                    film.getDuration());
             throw new ValidationException("продолжительность фильма задана некорректно");
         }
 
         if (film.getDescription().length() > descriptionMaxLength) {
-//            log.info("Запрос не выполнен: длина описания фильма={} символов - должна быть не более {}",
-//                    film.getDescription().length(), descriptionMaxLength);
+            log.info("Запрос не выполнен: длина описания фильма={} символов - должна быть не более {}",
+                    film.getDescription().length(), descriptionMaxLength);
             throw new ValidationException("описание фильма превышает " + descriptionMaxLength + " символов");
         }
     }

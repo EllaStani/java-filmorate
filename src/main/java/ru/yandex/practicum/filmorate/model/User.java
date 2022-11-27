@@ -30,6 +30,7 @@ public class User {
         this.name = name;
         this.birthday = birthday;
     }
+
     public Map<String, Object> toMap() {
         Map<String, Object> mapUser = new HashMap<>();
         mapUser.put("user_name", name);

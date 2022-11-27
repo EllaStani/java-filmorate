@@ -1,31 +1,26 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Primary
 @Component
 public class UserDbStorage implements UserStorage {
-    private final Logger log = LoggerFactory.getLogger(UserDbStorage.class);
+    @Autowired
+    FriendDbStorage friendDbStorage;
     private JdbcTemplate jdbcTemplate;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate){
-        this.jdbcTemplate=jdbcTemplate;
+    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -47,11 +42,11 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User getById(long userId) {  //  24:57
+    public User getById(long userId) {
         String sql = "SELECT * FROM users WHERE user_id = ?";
         List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs, rowNum), userId);
 
-        if(users.size() != 1) {
+        if (users.size() != 1) {
             throw new NotFoundException(String.format("Пользователь с id=%s не найден", userId));
         }
         return users.get(0);
@@ -73,15 +68,15 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void addFriend(User user, User film) {
-
+        friendDbStorage.addFriend(user.getId(), film.getId());
     }
 
     @Override
     public void deleteFriend(User user, User film) {
-
+        friendDbStorage.deleteFriend(user.getId(), film.getId());
     }
 
-     static User makeUser(ResultSet rs, int rowNum) throws SQLException {
+    static User makeUser(ResultSet rs, int rowNum) throws SQLException {
         return new User(
                 rs.getLong("user_id"),
                 rs.getString("email"),
