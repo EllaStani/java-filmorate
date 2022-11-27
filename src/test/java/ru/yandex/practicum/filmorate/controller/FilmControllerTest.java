@@ -21,7 +21,7 @@ class FilmControllerTest {
         film.setName("");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2020, 12, 28));
-        film.setDuration(100L);
+        film.setDuration(100);
 
         RuntimeException trow = assertThrows(RuntimeException.class, () -> {
             filmController.createFilm(film);});
@@ -34,7 +34,7 @@ class FilmControllerTest {
         film.setName("Name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(1895, 12, 27));
-        film.setDuration(100L);
+        film.setDuration(100);
 
         RuntimeException trow = assertThrows(RuntimeException.class, () -> {
             filmController.createFilm(film);});
@@ -47,7 +47,7 @@ class FilmControllerTest {
         film.setName("Name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2020, 12, 28));
-        film.setDuration(0L);
+        film.setDuration(0);
 
         RuntimeException trow = assertThrows(RuntimeException.class, () -> {
             filmController.createFilm(film);});
@@ -60,7 +60,7 @@ class FilmControllerTest {
         film.setName("Name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2020, 12, 28));
-        film.setDuration(-100L);
+        film.setDuration(-100);
 
         RuntimeException trow = assertThrows(RuntimeException.class, () -> {
             filmController.createFilm(film);});
@@ -75,7 +75,7 @@ class FilmControllerTest {
                 "Здесь они хотят разыскать господина Огюста Куглова, который задолжал им деньги, " +
                 "а именно 20 миллионов. о Куглов, который за время «своего отсутствия», стал кандидатом Коломбани.");
         film.setReleaseDate(LocalDate.of(2020, 12, 28));
-        film.setDuration(100L);
+        film.setDuration(100);
 
         RuntimeException trow = assertThrows(RuntimeException.class, () -> {
             filmController.createFilm(film);});
