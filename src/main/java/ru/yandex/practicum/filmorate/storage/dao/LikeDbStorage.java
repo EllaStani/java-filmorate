@@ -31,7 +31,6 @@ public class LikeDbStorage implements LikeStorage {
     public List<Film> getPopular(String count) {
         final String sgl = "SELECT * FROM films AS f, mpa AS m WHERE f.mpa_id = m.mpa_id " +
                 "ORDER BY rate DESC LIMIT ?";
-
         return jdbcTemplate.query(sgl, FilmDbStorage::makeFilm, count);
     }
 }

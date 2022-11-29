@@ -85,7 +85,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void addLike(Film film, User user) {
-        likeDbStorage.addLike(user.getId(), film.getId());
+        likeDbStorage.addLike(film.getId(), user.getId());
         updateRate(film.getId());
     }
 
