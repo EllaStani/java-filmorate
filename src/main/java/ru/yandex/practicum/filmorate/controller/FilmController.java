@@ -15,60 +15,36 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequestMapping("/films")
 public class FilmController {
-    @Autowired
-    private FilmService filmService;
 
-    @GetMapping("/films")
+    private FilmService filmService;
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
+
+    @GetMapping()
     public List<Film> getAllFilms() {
         List<Film> films = filmService.getAll();
         log.info("Get-запрос: всего фильмов={} : {}", films.size(), films);
         return films;
     }
 
-    @GetMapping("/films/{filmId}")
+    @GetMapping("/{filmId}")
     public Film getFilmsById(@PathVariable long filmId) {
         Film film = filmService.getById(filmId);
         log.info("Get-запрос: с id={} - фильм {}", filmId, film);
         return film;
     }
 
-    @GetMapping("/films/popular")
+    @GetMapping("/popular")
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10", required = false) String count) {
         List<Film> films = filmService.getPopular(count);
         log.info("Get-запрос: первые {} популярных фильмов: {}", count, films);
         return films;
     }
 
-    @GetMapping("/genres/{genreId}")
-    public Genre getGenreById(@PathVariable int genreId) {
-        Genre genre = filmService.getGenreById(genreId);
-        log.info("Get-запрос: жанр с id = {} : {}", genreId, genre);
-        return genre;
-    }
-
-    @GetMapping("/genres")
-    public List<Genre> getAllGenres() {
-        List<Genre> genres = filmService.getAllGenres();
-        log.info("Get-запрос: всего жанров = {} : {}", genres.size(), genres);
-        return genres;
-    }
-
-    @GetMapping("/mpa/{mpaId}")
-    public Mpa getMpaById(@PathVariable int mpaId) {
-        Mpa mpa = filmService.getMpaById(mpaId);
-        log.info("Get-запрос: MPA с id = {} : {}", mpaId, mpa);
-        return mpa;
-    }
-
-    @GetMapping("/mpa")
-    public List<Mpa> getAllMpa() {
-        List<Mpa> mpas = filmService.getAllMpa();
-        log.info("Get-запрос: всего MPA = {} : {}", mpas.size(), mpas);
-        return mpas;
-    }
-
-    @PostMapping("/films")
+    @PostMapping()
     public Film createFilm(@RequestBody Film film) {
         verification(film);
         filmService.create(film);
@@ -76,7 +52,7 @@ public class FilmController {
         return film;
     }
 
-    @PutMapping("/films")
+    @PutMapping()
     public Film updateFilm(@RequestBody Film film) {
         verification(film);
         filmService.update(film);
@@ -84,13 +60,13 @@ public class FilmController {
         return film;
     }
 
-    @PutMapping("/films/{filmId}/like/{userId}")
+    @PutMapping("/{filmId}/like/{userId}")
     public void addLike(@PathVariable long filmId, @PathVariable long userId) {
         filmService.addLike(filmId, userId);
         log.info("Put-запрос:  новый лайк у фильма с id={}", filmId);
     }
 
-    @DeleteMapping("/films/{filmId}/like/{userId}")
+    @DeleteMapping("/{filmId}/like/{userId}")
     public void deleteLike(@PathVariable long filmId, @PathVariable long userId) {
         filmService.deleteLike(filmId, userId);
         log.info("Delete-запрос:  дизлайк у фильма с id={}", filmId);

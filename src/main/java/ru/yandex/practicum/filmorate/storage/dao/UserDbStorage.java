@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -15,12 +14,13 @@ import java.util.List;
 @Primary
 @Component
 public class UserDbStorage implements UserStorage {
-    @Autowired
-    FriendDbStorage friendDbStorage;
+
+    private FriendDbStorage friendDbStorage;
     private JdbcTemplate jdbcTemplate;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate, FriendDbStorage friendDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.friendDbStorage = friendDbStorage;
     }
 
     @Override
@@ -66,17 +66,7 @@ public class UserDbStorage implements UserStorage {
         return getById(userId);
     }
 
-    @Override
-    public void addFriend(User user, User film) {
-        friendDbStorage.addFriend(user.getId(), film.getId());
-    }
-
-    @Override
-    public void deleteFriend(User user, User film) {
-        friendDbStorage.deleteFriend(user.getId(), film.getId());
-    }
-
-    static User makeUser(ResultSet rs, int rowNum) throws SQLException {
+    static public User makeUser(ResultSet rs, int rowNum) throws SQLException {
         return new User(
                 rs.getLong("user_id"),
                 rs.getString("email"),

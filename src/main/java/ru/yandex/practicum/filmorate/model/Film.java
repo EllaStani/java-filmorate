@@ -21,13 +21,15 @@ public class Film {
     @JsonIgnore
     private Set<Long> likeUserIds = new HashSet<>();
 
-    public Film(long id, String name, String description, LocalDate releaseDate, int duration, Mpa mpa) {
+    public Film(long id, String name, String description, LocalDate releaseDate, int duration, long rate, Mpa mpa) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+        this.rate = rate;
         this.mpa = mpa;
+
     }
 
     public void addGenre(Genre genre) {

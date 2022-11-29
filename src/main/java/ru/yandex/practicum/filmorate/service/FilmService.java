@@ -1,28 +1,32 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.*;
 
 import java.util.List;
 
 @Service
 public class FilmService {
-    @Autowired
     private FilmStorage filmStorage;
-    @Autowired
     private UserStorage userStorage;
-    @Autowired
     private LikeStorage likeStorage;
-    @Autowired
     private GenreStorage genreStorage;
-    @Autowired
     private MpaStorage mpaStorage;
+
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage, LikeStorage likeStorage,
+                       GenreStorage genreStorage, MpaStorage mpaStorage) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
+        this.likeStorage = likeStorage;
+        this.genreStorage = genreStorage;
+        this.mpaStorage = mpaStorage;
+    }
 
     public Film create(Film film) {
         if (filmStorage.getAll().contains(film)) {
@@ -67,9 +71,10 @@ public class FilmService {
     }
 
     public void addLike(long filmId, long userId) {
-        getFilmNotNull(filmId);
-        userStorage.getById(userId);
-        likeStorage.addLike(filmId, userId);
+        Film film = getFilmNotNull(filmId);
+        User user = userStorage.getById(userId);
+        filmStorage.addLike(film, user);
+
     }
 
     public void deleteLike(long filmId, long userId) {

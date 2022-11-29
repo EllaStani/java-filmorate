@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -19,7 +17,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class GenreDbStorage implements GenreStorage {
-    private final Logger log = LoggerFactory.getLogger(GenreDbStorage.class);
     private JdbcTemplate jdbcTemplate;
 
     public GenreDbStorage(JdbcTemplate jdbcTemplate) {
@@ -54,7 +51,7 @@ public class GenreDbStorage implements GenreStorage {
         }, films.stream().map(Film::getId).toArray());
     }
 
-    static Genre makeGenre(ResultSet rs, int rowNum) throws SQLException {
+    static public Genre makeGenre(ResultSet rs, int rowNum) throws SQLException {
         return new Genre(
                 rs.getInt("genre_id"),
                 rs.getString("genre_name"));

@@ -44,13 +44,13 @@ public class InMemoryUserStorage implements UserStorage {
         return users.remove(userId);
     }
 
-    @Override
+
     public void addFriend(User user, User friend) {
         user.getFriendIds().add(friend.getId());
         friend.getFriendIds().add(user.getId());
     }
 
-    @Override
+
     public void deleteFriend(User user, User friend) {
         user.getFriendIds().remove(friend.getId());
         friend.getFriendIds().remove(user.getId());

@@ -29,18 +29,9 @@ public class LikeDbStorage implements LikeStorage {
 
     @Override
     public List<Film> getPopular(String count) {
-        final String sgl = "WITH film_likes as (SELECT film_id, count(*) as like_count FROM likes group by film_id), " +
-                "films_with_popularity as (select f.*, f.rate + fl.like_count as popularity " +
-                "from films f left join film_likes fl on f.film_id = fl.film_id) " +
-                "SELECT * FROM films_with_popularity AS f, mpa AS m WHERE f.mpa_id = m.mpa_id " +
-                "ORDER BY popularity DESC LIMIT ?";
-        return jdbcTemplate.query(sgl, FilmDbStorage::makeFilm, count);
-    }
+        final String sgl = "SELECT * FROM films AS f, mpa AS m WHERE f.mpa_id = m.mpa_id " +
+                "ORDER BY rate DESC LIMIT ?";
 
-    private void updateRate(long filmId) {
-        long countUserId = jdbcTemplate.queryForObject("SELECT COUNT(user_id) FROM likes WHERE film_id =?",
-                Long.class, filmId);
-        String sql = "UPDATE films SET rate =? WHERE film_id =?";
-        jdbcTemplate.update(sql, countUserId, filmId);
+        return jdbcTemplate.query(sgl, FilmDbStorage::makeFilm, count);
     }
 }

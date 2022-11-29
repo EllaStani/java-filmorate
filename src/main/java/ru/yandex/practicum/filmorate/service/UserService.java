@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -14,10 +12,13 @@ import java.util.List;
 @Service
 public class UserService {
 
-    @Autowired
     private UserStorage userStorage;
-    @Autowired
     private FriendStorage friendStorage;
+
+    public UserService(UserStorage userStorage, FriendStorage friendStorage) {
+        this.userStorage = userStorage;
+        this.friendStorage = friendStorage;
+    }
 
     public User create(User user) {
         if (userStorage.getAll().contains(user)) {

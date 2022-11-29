@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -14,7 +12,6 @@ import java.util.List;
 
 @Component
 public class MpaDbStorage implements MpaStorage {
-    private final Logger log = LoggerFactory.getLogger(GenreDbStorage.class);
     private JdbcTemplate jdbcTemplate;
 
     public MpaDbStorage(JdbcTemplate jdbcTemplate) {
@@ -38,7 +35,7 @@ public class MpaDbStorage implements MpaStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeMpa(rs, rowNum));
     }
 
-    static Mpa makeMpa(ResultSet rs, int rowNum) throws SQLException {
+    static public Mpa makeMpa(ResultSet rs, int rowNum) throws SQLException {
         return new Mpa(
                 rs.getInt("mpa_id"),
                 rs.getString("mpa_name"));

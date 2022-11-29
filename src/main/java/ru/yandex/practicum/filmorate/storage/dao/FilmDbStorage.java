@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,20 +17,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import static ru.yandex.practicum.filmorate.storage.dao.GenreDbStorage.makeGenre;
 
 @Primary
 @Component
 public class FilmDbStorage implements FilmStorage {
-    @Autowired
-    MpaDbStorage mpaDbStorage;
-    @Autowired
-    GenreDbStorage genreDbStorage;
-    @Autowired
-    LikeDbStorage likeDbStorage;
+    private GenreDbStorage genreDbStorage;
+    private LikeDbStorage likeDbStorage;
     private JdbcTemplate jdbcTemplate;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+
+    public FilmDbStorage(GenreDbStorage genreDbStorage,
+                         LikeDbStorage likeDbStorage, JdbcTemplate jdbcTemplate) {
+        this.genreDbStorage = genreDbStorage;
+        this.likeDbStorage = likeDbStorage;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -42,8 +40,8 @@ public class FilmDbStorage implements FilmStorage {
                 .usingGeneratedKeyColumns("film_id");
         long filmId = simpleJdbcInsert.executeAndReturnKey(film.toMap()).longValue();
         film.setId(filmId);
-
         updateGenres(film);
+        updateRate(film.getId());
         return film;
     }
 
@@ -54,6 +52,7 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getRate(), film.getMpa().getId(), film.getId());
         updateGenres(film);
+        updateRate(film.getId());
         return film;
     }
 
@@ -87,13 +86,22 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public void addLike(Film film, User user) {
         likeDbStorage.addLike(user.getId(), film.getId());
+        updateRate(film.getId());
     }
 
     @Override
     public void deleteLike(Film film, User user) {
         likeDbStorage.deleteLike(user.getId(), film.getId());
+        updateRate(film.getId());
     }
 
+    private void updateRate(long filmId) {
+        long countUserId = jdbcTemplate.queryForObject("SELECT COUNT(user_id) FROM likes WHERE film_id =?",
+                Long.class, filmId);
+        String sql = "UPDATE films SET rate = ? WHERE film_id = ?";
+        jdbcTemplate.update(sql, countUserId, filmId);
+
+    }
     private void updateGenres(Film film) {
         final long filmId = film.getId();
         ArrayList<Genre> genres = new ArrayList<>(film.getGenres());
@@ -120,13 +128,14 @@ public class FilmDbStorage implements FilmStorage {
         });
     }
 
-    static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
+    static public Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         return new Film(
                 rs.getLong("film_id"),
                 rs.getString("film_name"),
                 rs.getString("description"),
                 rs.getDate("releaseDate").toLocalDate(),
                 rs.getInt("duration"),
+                rs.getLong("rate"),
                 new Mpa(rs.getInt("mpa_id"), rs.getString("mpa_name"))
         );
     }
