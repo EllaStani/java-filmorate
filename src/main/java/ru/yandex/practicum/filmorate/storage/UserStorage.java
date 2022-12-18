@@ -15,7 +15,4 @@ public interface UserStorage {
 
     User deleteById(long userId);
 
-    void addFriend(User user, User film);
-
-    void deleteFriend(User user, User film);
 }

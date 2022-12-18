@@ -5,19 +5,26 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
-    @Autowired
     private FilmStorage filmStorage;
-    @Autowired
     private UserStorage userStorage;
+    private LikeService likeService;
+
+
+    @Autowired
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage, LikeService likeService) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
+        this.likeService = likeService;
+    }
 
     public Film create(Film film) {
         if (filmStorage.getAll().contains(film)) {
@@ -46,41 +53,19 @@ public class FilmService {
     }
 
     public void addLike(long filmId, long userId) {
-        final Film film = getFilmNotNull(filmId);
-        final User user = userStorage.getById(userId);
-
-        if (user == null) {
-            throw new NotFoundException(String.format("Пользователь с id=%s не найден", userId));
-        }
-
+        Film film = getFilmNotNull(filmId);
+        User user = userStorage.getById(userId);
         filmStorage.addLike(film, user);
     }
 
     public void deleteLike(long filmId, long userId) {
-        final Film film = getFilmNotNull(filmId);
-        final User user = userStorage.getById(userId);
-
-        if (user == null) {
-            throw new NotFoundException(String.format("Пользователь с id=%s не найден", userId));
-        }
-
-        filmStorage.deleteLike(film, user);
+        getFilmNotNull(filmId);
+        userStorage.getById(userId);
+        likeService.deleteLike(filmId, userId);
     }
 
     public List<Film> getPopular(String count) {
-        List<Film> films = getAll();
-        return films.stream()
-                .sorted((f0, f1) -> compare(f0, f1))
-                .limit(Long.parseLong(count))
-                .collect(Collectors.toList());
-    }
-
-    private int compare(Film film1, Film film2) {
-        String f1 = String.valueOf(film1.getRate());
-        String f2 = String.valueOf(film2.getRate());
-        int result = f1.compareTo(f2);
-        result = -1 * result;
-        return result;
+        return likeService.getPopular(count);
     }
 
     private Film getFilmNotNull(long filmId) {

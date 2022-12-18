@@ -6,6 +6,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
@@ -15,10 +17,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    @Autowired
+
+
     private FilmService filmService;
+    // Я имел в виду еще писать @Autowired здесь,
+    // либо делать поле выше с пометкой final и ставить аннотацию @requiredargsconstructor
     @Autowired
-    private UserController userController;
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping()
     public List<Film> getAllFilms() {
@@ -60,13 +67,13 @@ public class FilmController {
     @PutMapping("/{filmId}/like/{userId}")
     public void addLike(@PathVariable long filmId, @PathVariable long userId) {
         filmService.addLike(filmId, userId);
-        log.info("Put-запрос:  новый лайк у фильма с id={}", userId);
+        log.info("Put-запрос:  новый лайк у фильма с id={}", filmId);
     }
 
     @DeleteMapping("/{filmId}/like/{userId}")
     public void deleteLike(@PathVariable long filmId, @PathVariable long userId) {
         filmService.deleteLike(filmId, userId);
-        log.info("Delete-запрос:  дизлайк у фильма с id={}", userId);
+        log.info("Delete-запрос:  дизлайк у фильма с id={}", filmId);
     }
 
     private void verification(Film film) {
