@@ -18,7 +18,11 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
+
     private FilmService filmService;
+    // Я имел в виду еще писать @Autowired здесь,
+    // либо делать поле выше с пометкой final и ставить аннотацию @requiredargsconstructor
+    @Autowired
     public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
